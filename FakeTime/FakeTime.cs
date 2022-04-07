@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 
-namespace Saab.Time
+namespace Saab.Time.Fakes
 {
     public class FakeTime : IDisposable
     {
@@ -79,42 +78,9 @@ namespace Saab.Time
             activeTimers.Clear();
         }
 
-        public CancellationTokenSource CreateCancellationTokenSource(TimeSpan timeout)
+        public ICancellationTokenSource CreateCancellationTokenSource(TimeSpan timeout)
         {
-            var cts = new CancellationTokenSource();
-
-            var result = CancellationTokenSource.CreateLinkedTokenSource(cts.Token);
-
-            var timer = CreateTimer();
-            timer.Interval = timeout.TotalMilliseconds;
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
-
-            var registration = result.Token.Register(() =>
-            {
-                timer?.Dispose();
-                timer = null;
-                cts?.Dispose();
-                cts = null;
-            });
-
-            void Timer_Elapsed(object sender, ElapsedEventArgs e)
-            {
-                try
-                {
-                    cts?.Cancel();
-                }
-                catch
-                {
-                }
-
-                timer?.Dispose();
-                timer = null;
-                cts?.Dispose();
-                cts = null;
-            }
-
-            return result;
+            return new FakeCancellationTokenSource(CreateTimer, timeout);
         }
 
         private void RemoveTimerFromActiveList(object sender, EventArgs e)
