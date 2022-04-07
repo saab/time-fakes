@@ -2,7 +2,7 @@
 Fake Time is a set of utilities for controlling the passage of time during a test run.
 
 Useful scenarios for this library are:
-* I have am using a CancellationToken which should be automatically cancelled in X seconds
+* I am using a CancellationToken which should be automatically cancelled in X seconds
 * I am using a timer, and I want to see how my class behaves as time progresses
 * I need to call Task.Delay as part of my workflow
 
@@ -133,7 +133,7 @@ Inject the required functions into your class, if you wanted to inject everythin
         services.AddSingleton<UtcNow>(() => DateTime.UtcNow);
         services.AddSingleton<CreateTimer>(() => new SystemTimer());
         services.AddSingleton<TaskDelay>((t, ct) => Task.Delay(t, ct));
-        services.AddSingleton<CreateCancellationTokenSource>(t => new CancellationTokenSource(t));
+        services.AddSingleton<CreateCancellationTokenSource>(t => new CancellationTokenSourceWrapper(t));
     }
 ```
 
@@ -143,8 +143,14 @@ Due to the large number of implementations of Timer in .NET, we have chosen to u
 public class SystemTimer : System.Timers.Timer, ITimer { }
 ```
 
+## CancellationTokenSource
+At this time a wrapper for CancellationTokenSource is not provided. This can be implemented in 1 line of code.
+```csharp
+public class CancellationTokenSourceWrapper : CancellationTokenSource, ICancellationTokenSource { }
+```
+
 ## Limitations
-* The Fake Cancellation token does not implement ```CancelAfter(Int32)```
+* The Fake CancellationTokenSource ```CancelAfter(Int32)``` method does not support 0 or -1 values like the real CancellationTokenSource
 
 ## Gotchas
 * Setting FakeTime.CurrentTime does not have any effect on the other Fakes being used, this is by design. Use the ```FakeTime.AdvanceTime(TimeSpan)``` method to advance time and see the effect on the fakes.

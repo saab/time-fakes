@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Saab.Time
+namespace Saab.Time.Fakes
 {
     public class FakeDelay
     {

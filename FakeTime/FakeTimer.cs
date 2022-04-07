@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Timers;
 
-namespace Saab.Time
+namespace Saab.Time.Fakes
 {
     public class FakeTimer : ITimer
     {
