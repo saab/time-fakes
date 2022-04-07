@@ -1,0 +1,41 @@
+name: build
+
+on: [workflow_call]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    environment: Build
+    strategy:
+      matrix:
+        dotnet-version: ['6.0.x']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # required for GitVersion to work
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v2.0.0
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.13
+        with:
+          versionSpec: '5.x'
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.13
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release -p:Version=$GITVERSION_SEMVER --no-restore
+      - name: Test
+        run: dotnet test --configuration Release --no-restore --no-build --verbosity normal
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget-package
+          path: "FakeTime/bin/Release/*.nupkg"
+          retention-days: 5

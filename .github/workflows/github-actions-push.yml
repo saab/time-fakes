@@ -1,0 +1,10 @@
+name: dotnet package
+
+on: 
+  push:
+    branches-ignore:
+      - 'main'
+
+jobs:
+  build:
+    uses: ./.github/workflows/github-actions-build.yml

@@ -1,0 +1,39 @@
+name: dotnet publish
+
+on: 
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    uses: ./.github/workflows/github-actions-build.yml
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: Build
+    strategy:
+      matrix:
+        dotnet-version: ['6.0.x']
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v2.0.0
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Download NuGet package
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget-package
+          
+      - name: Get certificate
+        run: echo "${{ secrets.PSSCODESIGNINGCERT }}" | base64 --decode > ${HOME}/cert.pfx
+      - name: Sign
+        run: dotnet nuget sign "*.nupkg" --certificate-path ${HOME}/cert.pfx --certificate-password "${{ secrets.PSSCODESIGNINGCERT_PASSWORD }}" --timestamper http://timestamp.digicert.com
+      - name: Delete certificate
+        run: rm ${HOME}/cert.pfx
+      - name: Publish
+        run: dotnet nuget push "*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
