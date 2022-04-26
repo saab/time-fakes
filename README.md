@@ -9,7 +9,7 @@ Useful scenarios for this library are:
 In all of the scenarios above, we would like our test run to be fast and predictable.
 
 ## Using the library
-We use dependancy injection to allow us control the passage of time during a test run. Delegates are provided to allow the fake to be injected during a test run, and the real implementation to be injected for production used.
+We use dependancy injection to allow us control the passage of time during a test run. Delegates are provided to allow the fake to be injected during a test run, and the real implementation to be injected for production use.
 
 ### Using FakeTime in your tests
 Declare an instance of FakeTime for your test run:
