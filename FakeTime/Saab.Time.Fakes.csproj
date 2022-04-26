@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <RepositoryUrl>https://github.com/saabgroup/fake-time</RepositoryUrl>
+    <RepositoryUrl>https://github.com/saabgroup/time-fakes</RepositoryUrl>
     <PackageTags>fake;time</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Utilities for controlling the passage of time during a test run</Description>
